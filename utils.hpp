@@ -36,14 +36,14 @@ namespace ft
 
 	template <class Iterator1, class Iterator2>
 	bool compare_elements(Iterator1 it1, Iterator1 ite1, Iterator2 it2, Iterator2 ite2){
-		for (; it1 != ite1; ++it1){
-			if (it2 == ite2)
+		for (; it1 != ite1; ++it1, ++it2) {
+			if (*it2 == *ite2)
 				return (false);
-			if (*it1 < *it2){
+			if (*it1 < *it2) {
 				return (true);
 			}
 			else
-				return (false);
+				return false;
 		}
 		return (true);
 	}

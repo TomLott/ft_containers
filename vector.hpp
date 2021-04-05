@@ -58,7 +58,8 @@ template<class T, class Alloc>
 			   const allocator_type &alloc = allocator_type(),
 			   typename ft::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0) : _alloc(alloc),
 																 _size(0),
-																 _cap(0)
+																 _cap(0),
+																 _arr(nullptr)
 																 {
 			ptrdiff_t len = last.operator->() - first.operator->();
 			if (len < 0)
@@ -74,7 +75,7 @@ template<class T, class Alloc>
 
 		vector(const vector &x) {
 			if (this != &x) {
-				this->_cap = x._cap;
+				this->_cap = x._size;
 				this->_size = x._size;
 				this->_alloc = x._alloc;
 				this->_arr = _alloc.allocate(_cap);
@@ -84,17 +85,15 @@ template<class T, class Alloc>
 			}
 		}
 		void clear() {
-			if (_arr) {
-				for (size_t i = 0; i < _size; i++) {
-					_alloc.destroy(_arr + i);
-				}
+			for (size_t i = 0; i < _size; i++) {
+				_alloc.destroy(_arr + i);
 			}
 			_size = 0;
 		}
 
 		virtual ~vector() {
-			clear();
 			if (_arr)
+				clear();
 				_alloc.deallocate(_arr, _cap);
 		}
 
@@ -103,12 +102,11 @@ template<class T, class Alloc>
 		vector & operator = (vector const & src){
 			if (this != &src){
 				clear();
-				//_alloc.deallocate(_arr, _cap);
-				this->_cap = src._cap;
+				_alloc.deallocate(_arr, _cap);
+				this->_cap = src._size;
 				this->_size = src._size;
-				this->_alloc = src._alloc;
 				this->_arr = _alloc.allocate(_cap);
-				for (size_t i = 0; i < src._cap; i++){
+				for (size_t i = 0; i < src._size; i++){
 					_alloc.construct(_arr + i, *(src._arr + i));
 				}
 			}
@@ -290,7 +288,7 @@ template<class T, class Alloc>
 			pointer _it;
 			reverse_iterator() : _it(0){};
 		public:
-			explicit reverse_iterator(pointer it) : _it(it) {};
+			explicit reverse_iterator(pointer it = 0) : _it(it) {};
 			~reverse_iterator(){};
 			reverse_iterator(reverse_iterator const & src){
 				if (this != &src){
@@ -313,7 +311,7 @@ template<class T, class Alloc>
 
 			reverse_iterator & operator++() const{
 				_it = _it - 1;
-				return (*_it);
+				return (*this);
 			}
 
 			reverse_iterator operator--(int){
@@ -324,7 +322,7 @@ template<class T, class Alloc>
 
 			reverse_iterator & operator--() const{
 				_it = _it + 1;
-				return (*_it);
+				return (*this);
 			}
 
 			reverse_iterator operator+(difference_type n) const{ return const_iterator(_it - n);}
@@ -335,7 +333,7 @@ template<class T, class Alloc>
 			reverse_iterator operator += (difference_type n){ return (_it -= n);}
 			reverse_iterator operator -= (difference_type n){ return (_it += n);}
 
-			reference operator[] (difference_type n) const {return (*(_it - n));}
+			reference operator[] (difference_type n) const {return (*(_it + n));}
 
 			reference operator* () const{return (*_it);}
 
@@ -440,10 +438,10 @@ template<class T, class Alloc>
 		iterator end() { return iterator(_arr + _size);}
 		const_iterator end () const { return  const_iterator(_arr + _size);}
 
-		reverse_iterator rbegin() { return reverse_iterator(_arr - 1);}
+		reverse_iterator rbegin() { return reverse_iterator(_arr + _size - 1);}
 		const_reverse_iterator rbegin() const { return const_reverse_iterator(_arr + _size - 1);}
 		reverse_iterator rend() { return  reverse_iterator(_arr - 1);}
-		const_reverse_iterator rend() const { return const_reverse_iterator(_arr + _size - 1);}
+		const_reverse_iterator rend() const { return const_reverse_iterator(_arr - 1);}
 
 		const_iterator cbegin() const {return const_iterator(_arr);}
 		const_iterator cend() const{ return const_iterator(_arr + _size);}
@@ -454,17 +452,21 @@ template<class T, class Alloc>
 		///vectors functions
 
 		size_type size() const{ return (_size);}
-		size_type max_size() const {return (std::numeric_limits<difference_type>::max())/sizeof(_arr[0]);}
+		size_type max_size() const {return (size_type(~0) / sizeof(value_type));}
 
 		void resize(size_type n, value_type val = value_type()){
+			if (n > max_size())
+				throw std::length_error("'n' is more than max_size");
 			if (n < _size){
-				while (n < _size--)
-					pop_back();
+				for (size_type i = _size - n; i < n; i++)
+					_alloc.destroy(_arr + i);
 			}
 			else if (n > _size){
-				while (n > _size++)
-					push_back(val);
+				reserve(n);
+				for (size_type i = _size; i < n; i++)
+					_alloc.construct(_arr + i, val);
 			}
+			_size = n;
 		}
 
 		size_type capacity() const{	return (_cap);}
@@ -534,15 +536,15 @@ template<class T, class Alloc>
 		}
 
 		iterator insert(iterator position, const value_type & val){
-			pointer newArr;
 			if (_cap == 0){
 				_cap = 1;
 				_size = 1;
-				newArr= _alloc.allocate(1);
-				_alloc.construct((newArr + 1), val);
-				return iterator(newArr);
+				_arr = _alloc.allocate(1);
+				_alloc.construct(_arr, val);
+				return iterator(_arr);
 			}
-			size_type newPos = position.getElement() - _arr;
+			pointer newArr = 0;
+			size_type newPos = position.operator->() - _arr;
 			size_type newCap;
 			if (_size + 1 > _cap)
 				newCap = _cap * 2;
@@ -550,25 +552,24 @@ template<class T, class Alloc>
 				newCap = _cap;
 			newArr = _alloc.allocate(newCap);
 			size_type i = 0;
-			for (; i < newPos; i++){
+			for (; i < newPos; ++i){
 				_alloc.construct(newArr + i, *(_arr + i));
 			}
 			_alloc.construct(newArr + newPos, val);
 			i++;
-			for (; i < _size; ++i){
+			for (; i < _size + 1; ++i){
 				_alloc.construct(newArr + i, *(_arr + i - 1));
 			}
-			size_type size = _size;
-			clear();
+			for (size_type k = 0; k < _size; ++k)
+				_alloc.destroy(_arr + k);
 			_alloc.deallocate(_arr, _cap);
 			_arr = newArr;
 			_cap = newCap;
-			_size = size + 1;
+			_size++;
 			return (iterator(_arr + newPos));
 		}
 
 		void insert(iterator position, size_type n, const value_type & val){
-			pointer newArr;
 			if (_cap == 0){
 				_cap = n;
 				_size = n;
@@ -578,9 +579,10 @@ template<class T, class Alloc>
 				}
 				return ;
 			}
-			size_type newPos = position.getElement() - _arr;
+			pointer newArr = 0;
+			size_type newPos = position.operator->() - _arr;
 			size_type newCap;
-			if (_size + 1 > _cap)
+			if (_size + n > _cap)
 				newCap = _cap * 2;
 			else
 				newCap = _cap;
@@ -589,16 +591,15 @@ template<class T, class Alloc>
 			for (; i < newPos; i++){
 				_alloc.construct(newArr + i, *(_arr + i));
 			}
-			size_type j = newPos;
-			for (; j < n; j++, i++){
-				_alloc.construct(newArr + j, val);
+			size_type j = 0;
+			for (; j < n; ++j, ++i){
+				_alloc.construct(newArr + j + newPos, val);
 			}
-			i++;
-			for (; i < _size + n; i++){
+			for (; i < _size + n + 1; ++i){
 				_alloc.construct(newArr + i, *(_arr + i - n));
 			}
 			j = 0;
-			for (; j < _size; j++){
+			for (; j < _size; ++j){
 				_alloc.destroy(_arr + j);
 			}
 			_alloc.deallocate(_arr, _cap);
@@ -621,7 +622,7 @@ template<class T, class Alloc>
 				}
 				return ;
 			}
-			size_type newPos = position.getElement() - _arr;
+			size_type newPos = position.operator->() - _arr;
 			size_type newCap;
 			if (_size + len > _cap){
 				newCap = (_size + len) * 2;
@@ -633,7 +634,7 @@ template<class T, class Alloc>
 			for (; i < newPos; i++){
 				_alloc.construct(newArr + i, *(_arr + i));
 			}
-			for (ptrdiff_t j = 0; j < len; ++j, i++){
+			for (ptrdiff_t j = 0; j < len; ++j,++i){
 				_alloc.construct(newArr + len + j, *first);
 				first++;
 			}
@@ -656,7 +657,8 @@ template<class T, class Alloc>
 				if (newPos + 1 < _size)
 					_alloc.construct(_arr + newPos, *(_arr + newPos + 1));
 			}
-			_alloc.destroy(_arr + (--_size));
+			_size--;
+			_alloc.destroy(_arr + (_size - 1));
 			return (iterator(position.getElement()));
 		}
 
@@ -710,22 +712,26 @@ template<class T, class Alloc>
 
 		template <class T, class Alloc>
 		bool operator<  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs){
+			if (lhs == rhs)
+				return (false);
 			return (compare_elements(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 		}
 
 		template <class T, class Alloc>
 		bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
-			return !(lhs < rhs);
+			return (lhs > rhs || lhs == rhs);
 		}
 
 		template <class T, class Alloc>
-		bool operator>  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs){
+		bool operator >  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs){
+			if (lhs == rhs)
+				return (false);
 			return !(compare_elements(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 		}
 
 		template <class T, class Alloc>
 		bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs){
-			return !(lhs > rhs);
+			return (lhs < rhs || lhs == rhs) ;
 		}
 
 
