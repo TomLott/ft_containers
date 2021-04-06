@@ -6,21 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/Users/itollett/containers/main.cpp
-list
+/Users/itollett/containers/main2.cpp
+iostream
 -
 vector
 -
-map
--
-queue
--
-stack
--
 vector.hpp
 /Users/itollett/containers/vector.hpp
-utils.hpp
-/Users/itollett/containers/utils.hpp
 
 /Users/itollett/containers/utils.hpp
 string
@@ -31,6 +23,4 @@ iostream
 /Users/itollett/containers/vector.hpp
 utils.hpp
 /Users/itollett/containers/utils.hpp
-vector
--
 

@@ -7,6 +7,8 @@ namespace ft
 {
 	template<class T, class Alloc = std::allocator <T> >
 	class vector;
+	template<class T, class Alloc = std::allocator <T> >
+	class list;
 
 
 

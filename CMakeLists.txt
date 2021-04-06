@@ -7,5 +7,6 @@ include_directories(.)
 
 add_executable(containers
        vector.hpp
+        list.hpp
       utils.hpp
-         main.cpp)
+         main1.cpp)

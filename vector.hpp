@@ -3,8 +3,6 @@
 
 #include "utils.hpp"
 
-#include <vector>
-
 template<class T, class Alloc>
 	class ft::vector {
 
@@ -105,6 +103,7 @@ template<class T, class Alloc>
 				_alloc.deallocate(_arr, _cap);
 				this->_cap = src._size;
 				this->_size = src._size;
+				this->_alloc = src._alloc;
 				this->_arr = _alloc.allocate(_cap);
 				for (size_t i = 0; i < src._size; i++){
 					_alloc.construct(_arr + i, *(src._arr + i));
@@ -282,7 +281,6 @@ template<class T, class Alloc>
 			const_pointer getElement() const {return (_it);}
 
 };
-
 		class reverse_iterator : public ft::iterator<std::random_access_iterator_tag, value_type>{
 		private:
 			pointer _it;
@@ -349,7 +347,6 @@ template<class T, class Alloc>
 			const_pointer getElement() const {return (_it);}
 
 		};
-
 		class const_reverse_iterator : public ft::iterator<std::random_access_iterator_tag, value_type> {
 		private:
 			pointer _it;
@@ -480,9 +477,7 @@ template<class T, class Alloc>
 				for (size_type i = 0; i < _size; i++){
 					_alloc.destroy(_arr + i);
 				}
-				if (_cap){
-					_alloc.deallocate(_arr, _cap);
-				}
+				_alloc.deallocate(_arr, _cap);
 				_arr = newArr;
 				_cap = n;
 			}
@@ -515,23 +510,20 @@ template<class T, class Alloc>
 				void assign(InputIterator first, InputIterator last,
 				typename ft::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0){
 			clear();
-			ptrdiff_t  len = last - first;
+			ptrdiff_t  len = last.operator->() - first.operator->();
 			if (len > _cap)
 				reserve(len);
 			for (ptrdiff_t i = 0; i < len; i++){
 				_alloc.construct(_arr + i, *first);
 				first++;
 			}
-			_size = len;
+			_size = static_cast<size_t>(len);
 		}
 
 		void assign(size_type n, const value_type & val){
 			if (n < 0)
 				throw std::length_error("vector");
 			clear();
-			if (n > _cap) {
-				reserve(n);
-			}
 			insert(this->begin(), n, val);
 		}
 
@@ -583,7 +575,7 @@ template<class T, class Alloc>
 			size_type newPos = position.operator->() - _arr;
 			size_type newCap;
 			if (_size + n > _cap)
-				newCap = _cap * 2;
+				newCap = (_size + n) * 2;
 			else
 				newCap = _cap;
 			newArr = _alloc.allocate(newCap);
