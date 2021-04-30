@@ -6,10 +6,16 @@
 namespace ft
 {
 	template<class T, class Alloc = std::allocator <T> >
-	class vector;
+		class vector;
 	template<class T, class Alloc = std::allocator <T> >
-	class list;
+		class list;
+	template<class T, class Container = ft::list<T>  >
+		class queue;
+	template<class T, class Container = ft::list<T>  >
+		class stack;
 
+	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key, T> > >
+			class map;
 
 
 	template<bool B, class T = void>

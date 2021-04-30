@@ -150,6 +150,13 @@ template<class T, class Alloc>
 				return (*this);
 			}
 
+			iterator &operator=(const const_iterator &src) {
+				if (this != &src) {
+					_it = src.getElement();
+				}
+				return (*this);
+			}
+
 			iterator &operator++() {
 				_it = _it + 1;
 				return (*this);
@@ -188,6 +195,13 @@ template<class T, class Alloc>
 			bool operator>(iterator const & src){	return (_it > src._it);	}
 			bool operator>=(iterator const & src){	return (_it >= src._it);}
 			bool operator<=(iterator const & src){  return (_it <= src._it);}
+
+			bool operator==(const_iterator const & src){	return (_it == src.getElement());}
+			bool operator!=(const_iterator const & src){	return (_it != src.getElement());}
+			bool operator<(const_iterator const & src){	return (_it < src.getElement());	}
+			bool operator>(const_iterator const & src){	return (_it > src.getElement());	}
+			bool operator>=(const_iterator const & src){	return (_it >= src.getElement());}
+			bool operator<=(const_iterator const & src){  return (_it <= src.getElement());}
 
 			pointer getElement() const {return (_it);}
 
@@ -270,12 +284,12 @@ template<class T, class Alloc>
 			bool operator>=(const_iterator const & src){return (_it >= src._it);}
 			bool operator<=(const_iterator const & src){return (_it <= src._it);}
 
-			bool operator==(iterator const & src){return (_it == src._it);}
-			bool operator!=(iterator const & src){return (_it != src._it);}
-			bool operator<(iterator const & src){	return (_it < src._it);}
-			bool operator>(iterator const & src){	return (_it > src._it);}
-			bool operator>=(iterator const & src){return (_it >= src._it);}
-			bool operator<=(iterator const & src){return (_it <= src._it);}
+			bool operator==(iterator const & src){return (_it == src.getElement());}
+			bool operator!=(iterator const & src){return (_it != src.getElement());}
+			bool operator<(iterator const & src){	return (_it < src.getElement());}
+			bool operator>(iterator const & src){	return (_it > src.getElement());}
+			bool operator>=(iterator const & src){return (_it >= src.getElement());}
+			bool operator<=(iterator const & src){return (_it <= src.getElement());}
 
 
 			const_pointer getElement() const {return (_it);}
@@ -344,6 +358,13 @@ template<class T, class Alloc>
 			bool operator>=(reverse_iterator const & src){	return (_it <= src._it);}
 			bool operator<=(reverse_iterator const & src){	return (_it >= src._it);}
 
+			bool operator == (const const_reverse_iterator & src) const{ return (_it == src.getElement());}
+			bool operator != (const const_reverse_iterator & src) const{ return (_it != src.getElement());}
+			bool operator <= (const const_reverse_iterator & src) const{ return (_it >= src.getElement());}
+			bool operator >= (const const_reverse_iterator & src) const{ return (_it <= src.getElement());}
+			bool operator > (const const_reverse_iterator & src) const{ return (_it < src.getElement());}
+			bool operator < (const const_reverse_iterator & src) const{ return (_it > src.getElement());}
+
 			const_pointer getElement() const {return (_it);}
 
 		};
@@ -408,20 +429,19 @@ template<class T, class Alloc>
 			const_reference operator *() const{	return (*_it);	}
 			const_pointer operator-> () const{	return (_it);}
 
-			bool operator == (const const_reverse_iterator & src) const{ return (_it == src._it);};
-			bool operator != (const const_reverse_iterator & src) const{ return (_it != src._it);};
-			bool operator <= (const const_reverse_iterator & src) const{ return (_it >= src._it);};
-			bool operator >= (const const_reverse_iterator & src) const{ return (_it <= src._it);};
-			bool operator > (const const_reverse_iterator & src) const{ return (_it < src._it);};
-			bool operator < (const const_reverse_iterator & src) const{ return (_it > src._it);};
+			bool operator == (const const_reverse_iterator & src) const{ return (_it == src._it);}
+			bool operator != (const const_reverse_iterator & src) const{ return (_it != src._it);}
+			bool operator <= (const const_reverse_iterator & src) const{ return (_it >= src._it);}
+			bool operator >= (const const_reverse_iterator & src) const{ return (_it <= src._it);}
+			bool operator > (const const_reverse_iterator & src) const{ return (_it < src._it);}
+			bool operator < (const const_reverse_iterator & src) const{ return (_it > src._it);}
 
-
-			bool operator == (const reverse_iterator & src) const{ return (_it == src.getElement());};
-			bool operator != (const reverse_iterator & src) const{ return (_it != src.getElement());};
-			bool operator <= (const reverse_iterator & src) const{ return (_it >= src.getElement());};
-			bool operator <(const reverse_iterator & src) const{ return (_it > src.getElement());};
-			bool operator >= (const reverse_iterator & src) const{ return (_it <= src.getElement());};
-			bool operator > (const reverse_iterator & src) const{ return (_it < src.getElement());};
+			bool operator == (const reverse_iterator & src) const{ return (_it == src.getElement());}
+			bool operator != (const reverse_iterator & src) const{ return (_it != src.getElement());}
+			bool operator <= (const reverse_iterator & src) const{ return (_it >= src.getElement());}
+			bool operator <(const reverse_iterator & src) const{ return (_it > src.getElement());}
+			bool operator >= (const reverse_iterator & src) const{ return (_it <= src.getElement());}
+			bool operator > (const reverse_iterator & src) const{ return (_it < src.getElement());}
 
 
 

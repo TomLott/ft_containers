@@ -2351,7 +2351,7 @@ int main()
 //	testList();
 	std::cout << "                                                VECTOR" << std::endl;
 	testVector();
-	std::cout << "                                                MAP" << std::endl;
+//	std::cout << "                                                MAP" << std::endl;
 //	testMap();
 //	std::cout << "                                                QUEUE" << std::endl;
 //	testQueue();

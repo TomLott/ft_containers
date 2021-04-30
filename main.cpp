@@ -4,7 +4,7 @@
 #include <queue>
 #include <stack>
 //#include "map.hpp"
-//#include "list.hpp"
+#include "list.hpp"
 #include "vector.hpp"
 //#include "queue.hpp"
 //#include "stack.hpp"
@@ -165,7 +165,7 @@ void queuePushElem(std::queue<T> &std, ft::queue<T> &ft, unsigned long number) {
 }
 
 template <typename T>
-void fillStrQueue(std::queue<T> &def, ft::queue<T> &my, std::string &std, std::string &ft) {
+void fillStrQueue(std::queue<T> &def, ft::queue<T> &mylistPushFrontElem, std::string &std, std::string &ft) {
 	std += def.back();
 	ft += my.back();
 	std += def.front();
@@ -2640,7 +2640,7 @@ void  testList() {
 }
 */
 //MARK: - Defoult constructor vector
-
+/*
 void defaultCnstTestVector(std::string &std, std::string &ft) {
 	std::cout << "Default constructor int test" << " ";
 	std::vector<int> def;
@@ -4927,7 +4927,7 @@ void testVector() {
 	swapNonMemberTestVector(std, ft);
 	swapNonMemberTestVectorFloat(std, ft);
 	swapNonMemberTestVectorStr(std, ft);
-}
+}*/
 //
 //MARK: - Default constructor map
 //
@@ -8494,9 +8494,9 @@ void testStack() {
 int main()
 {
 //	std::cout << "                                                LIST" << std::endl;
-//	testList();
+	testList();
 //	std::cout << "                                                VECTOR" << std::endl;
-	testVector();
+//	testVector();
 //	std::cout << "                                                MAP" << std::endl;
 //	testMap();
 //	std::cout << "                                                QUEUE" << std::endl;
