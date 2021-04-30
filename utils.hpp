@@ -2,6 +2,7 @@
 #define UTILS_HPP
 #include <string>
 #include <iostream>
+#include <utility>
 
 namespace ft
 {
@@ -13,7 +14,6 @@ namespace ft
 		class queue;
 	template<class T, class Container = ft::list<T>  >
 		class stack;
-
 	template < class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key, T> > >
 			class map;
 
@@ -62,6 +62,25 @@ namespace ft
 		x = y;
 		y = z;
 	}
+
+	template <class T, class Container>
+	bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
+
+	template <class T, class Container>
+	bool operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
+
+
+	template <class T, class Container>
+	bool operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
+
+	template <class T, class Container>
+	bool operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
+
+	template <class T, class Container>
+	bool operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
+
+	template <class T, class Container>
+	bool operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
 
 
 

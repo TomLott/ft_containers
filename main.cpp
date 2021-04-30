@@ -3,15 +3,14 @@
 #include <map>
 #include <queue>
 #include <stack>
-//#include "map.hpp"
+#include "map.hpp"
 #include "list.hpp"
 #include "vector.hpp"
-//#include "queue.hpp"
-//#include "stack.hpp"
+#include "queue.hpp"
+#include "stack.hpp"
 #include "utils.hpp"
 
-//MARK: - Utils
-/*
+
 bool singleDigit(const int& value) {
 	return (value < 10);
 }
@@ -70,8 +69,7 @@ void listPopBackElem(std::list<T> &std, ft::list<T> &ft, unsigned long number) {
 		ft.pop_back();
 	}
 }
-*/
-//MARK: - Utilst vector
+
 
 template <typename T>
 void VectorPushBackElem(std::vector<T> &std, ft::vector<T> &ft, unsigned long number) {
@@ -102,7 +100,7 @@ void VectorFillStr(std::vector<T> &def, ft::vector<T> &my, std::string &std, std
 	std += def.size();
 	ft += my.size();
 }
-/*
+
 //MARK: - Utilst map
 
 template <typename Key, typename T>
@@ -165,7 +163,7 @@ void queuePushElem(std::queue<T> &std, ft::queue<T> &ft, unsigned long number) {
 }
 
 template <typename T>
-void fillStrQueue(std::queue<T> &def, ft::queue<T> &mylistPushFrontElem, std::string &std, std::string &ft) {
+void fillStrQueue(std::queue<T> &def, ft::queue<T> &my, std::string &std, std::string &ft) {
 	std += def.back();
 	ft += my.back();
 	std += def.front();
@@ -462,46 +460,6 @@ void iteratorTest(std::string &std, std::string &ft, int number) {
 	ft.clear();
 }
 
-//MARK: - Const iteratot list
-
-void constIteratorTest(std::string &std, std::string &ft, int number) {
-	std::list<int> testStd;
-	ft::list<int> testFt;
-	std::cout << "All const_iterator test" << " ";
-	for (int l = 0; l < number; l++) {
-		testStd.push_back(l);
-		testFt.push_back(l);
-	}
-	std::list<int>::const_iterator it = testStd.cbegin();
-	std::list<int>::const_iterator ite = testStd.cend();
-	ft::list<int>::const_iterator itm = testFt.cbegin();
-	ft::list<int>::const_iterator item = testFt.cend();
-	while (it != ite) {
-		std += *it;
-		it++;
-	}
-	while (itm != item) {
-		ft += *itm;
-		itm++;
-	}
-	it = testStd.cbegin();
-	itm = testFt.cbegin();
-	while (ite != it) {
-		ite--;
-		std += *ite;
-	}
-	while (item != itm) {
-		item--;
-		ft += *item;
-	}
-	if (std == ft)
-		std::cout << "\033[1;32m[OK]\033[0;0m" << std::endl;
-	else
-		std::cout << "\033[1;31m[FAIL]\033[0;0m" << std::endl;
-	std.clear();
-	ft.clear();
-}
-
 //MARK: - Reverse iteratot list
 
 void reverseIteratorTest(std::string &std, std::string &ft, int number) {
@@ -543,44 +501,6 @@ void reverseIteratorTest(std::string &std, std::string &ft, int number) {
 }
 
 //MARK: - Const reverse iteratot list
-
-void constReverseIteratorTest(std::string &std, std::string &ft, int number) {
-	std::list<int> testStd;
-	ft::list<int> testFt;
-	std::cout << "All const_reverse_iterator test" << " ";
-	for (int l = 0; l < number; l++) {
-		testStd.push_back(l);
-		testFt.push_back(l);
-	}
-	std::list<int>::const_reverse_iterator it = testStd.crbegin();
-	std::list<int>::const_reverse_iterator ite = testStd.crend();
-	ft::list<int>::const_reverse_iterator itm = testFt.crbegin();
-	ft::list<int>::const_reverse_iterator item = testFt.crend();
-	while (it != ite) {
-		std += *it;
-		it++;
-	}
-	while (itm != item) {
-		ft += *itm;
-		itm++;
-	}
-	it = testStd.crbegin();
-	itm = testFt.crbegin();
-	while (ite != it) {
-		ite--;
-		std += *ite;
-	}
-	while (item != itm) {
-		item--;
-		ft += *item;
-	}
-	if (std == ft)
-		std::cout << "\033[1;32m[OK]\033[0;0m" << std::endl;
-	else
-		std::cout << "\033[1;31m[FAIL]\033[0;0m" << std::endl;
-	std.clear();
-	ft.clear();
-}
 
 //MARK: - Capacity list
 
@@ -2567,9 +2487,7 @@ void  testList() {
 	assignRangeTestListStr(std, ft);
 	std::cout << "                            ITERATORS" << std::endl;
 	iteratorTest(std, ft, 1000);
-	constIteratorTest(std, ft, 1000);
 	reverseIteratorTest(std, ft, 1000);
-	constReverseIteratorTest(std, ft, 1000);
 	std::cout << "                            CAPACITY" << std::endl;
 	capacityTests(std, ft);
 	std::cout << "                            ELEMENT ACCESS" << std::endl;
@@ -2638,9 +2556,9 @@ void  testList() {
 	swapNonMemberTestFloat(std, ft);
 	swapNonMemberTestStr(std, ft);
 }
-*/
+
 //MARK: - Defoult constructor vector
-/*
+
 void defaultCnstTestVector(std::string &std, std::string &ft) {
 	std::cout << "Default constructor int test" << " ";
 	std::vector<int> def;
@@ -4927,23 +4845,22 @@ void testVector() {
 	swapNonMemberTestVector(std, ft);
 	swapNonMemberTestVectorFloat(std, ft);
 	swapNonMemberTestVectorStr(std, ft);
-}*/
-//
+}
+
 //MARK: - Default constructor map
-//
-//void defaultCnstTestMap(std::string &std, std::string &ft) {
-//	std::cout << "Default constructor int test" << " ";
-//	std::map<int, int> def;
-//	ft::map<int, int> my;
-//	mapFillStr(def, my, std, ft);
-//	if (std == ft)
-//		std::cout << "\033[1;32m[OK]\033[0;0m" << std::endl;
-//	else
-//		std::cout << "\033[1;31m[FAIL]\033[0;0m" << std::endl;
-//	std.clear();
-//	ft.clear();
-//}
-/*
+
+void defaultCnstTestMap(std::string &std, std::string &ft) {
+	std::cout << "Default constructor int test" << " ";
+	std::map<int, int> def;
+	ft::map<int, int> my;
+	mapFillStr(def, my, std, ft);
+	if (std == ft)
+		std::cout << "\033[1;32m[OK]\033[0;0m" << std::endl;
+	else
+		std::cout << "\033[1;31m[FAIL]\033[0;0m" << std::endl;
+	std.clear();
+	ft.clear();
+}
 void defaultCnstTestMapFloat(std::string &std, std::string &ft) {
 	std::cout << "Default constructor float test" << " ";
 	std::map<float, float> def;
@@ -5197,8 +5114,8 @@ void constIteratorTestMap(std::string &std, std::string &ft, int number) {
 	}
 	std::map<int,int>::const_iterator it = testStd.cbegin();
 	std::map<int,int>::const_iterator ite = testStd.cend();
-	ft::map<int,int>::const_iterator itm = testFt.cbegin();
-	ft::map<int,int>::const_iterator item = testFt.cend();
+	ft::map<int,int>::const_iterator itm = testFt.begin();
+	ft::map<int,int>::const_iterator item = testFt.end();
 	while (it != ite) {
 		std += it->first;
 		std += it->second;
@@ -5210,7 +5127,7 @@ void constIteratorTestMap(std::string &std, std::string &ft, int number) {
 		itm++;
 	}
 	it = testStd.cbegin();
-	itm = testFt.cbegin();
+	itm = testFt.begin();
 	while (ite != it) {
 		ite--;
 		std += ite->first;
@@ -5287,8 +5204,8 @@ void constReverseIteratorTestMap(std::string &std, std::string &ft, int number) 
 	}
 	std::map<int,int>::const_reverse_iterator it = testStd.crbegin();
 	std::map<int,int>::const_reverse_iterator ite = testStd.crend();
-	ft::map<int,int>::const_reverse_iterator itm = testFt.crbegin();
-	ft::map<int,int>::const_reverse_iterator item = testFt.crend();
+	ft::map<int,int>::const_reverse_iterator itm = testFt.rbegin();
+	ft::map<int,int>::const_reverse_iterator item = testFt.rend();
 	while (it != ite) {
 		std += it->first;
 		std += it->second;
@@ -5299,8 +5216,8 @@ void constReverseIteratorTestMap(std::string &std, std::string &ft, int number) 
 		ft += itm->second;
 		itm++;
 	}
-	it = testStd.crbegin();
-	itm = testFt.crbegin();
+	it = testStd.rbegin();
+	itm = testFt.rbegin();
 	while (ite != it) {
 		ite--;
 		std += ite->first;
@@ -8443,9 +8360,9 @@ void greaterOrEqualTestStackStr(std::string &std, std::string &ft) {
 	std.clear();
 	ft.clear();
 }
-*/
+
 //MARK: - Stack
-/*
+
 void testStack() {
 	//MARK: - Constructor
 	std::cout << "                         CONSTRUCTOR" << std::endl;

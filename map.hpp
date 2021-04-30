@@ -87,7 +87,7 @@ private:
 		node->color = color;
 		node->content = _alloc.allocate(1);
 		_alloc.construct(node->content, content);
-		size++;
+		_size++;
 		return (node);
 	}
 
@@ -95,7 +95,7 @@ private:
 		_alloc.destroy(node->content);
 		_alloc.deallocate(node->content, 1);
 		_node_alloc.deallocate(node, 1);
-		size--;
+		_size--;
 	}
 
 	bool _isOnLeft(Node * node){
@@ -200,7 +200,7 @@ private:
 			}
 			else {
 				if (_isOnLeft(parent)) {
-					if (_isOnLeft(node){
+					if (_isOnLeft(node)){
 						/*for left right*/
 						_colorSwap(parent, grandParent);
 					}
@@ -208,7 +208,7 @@ private:
 						_rotateLeft(parent);
 						_colorSwap(node, grandParent);
 					}
-					_rotateRight(grandParent)
+					_rotateRight(grandParent);
 				}
 				else{
 					if (_isOnLeft(node)){
@@ -217,7 +217,7 @@ private:
 						_colorSwap(node, grandParent);
 					}
 					else{
-						_colorSwap(parent, gradParent);
+						_colorSwap(parent, grandParent);
 					}
 					_rotateLeft(grandParent);
 				}
@@ -228,7 +228,7 @@ private:
 	Node * _parentWithoutLeftChild(Node * node){
 		Node * temp = node;
 		while (temp->left != nullptr){  temp = temp->left; }
-		return (temp)
+		return (temp);
 	}
 
 	Node * _nodeReplace(Node *node){
@@ -263,7 +263,7 @@ private:
 			}
 			else {
 				if (_hasRedChild(brotherNode)) {
-					if (brotherNode->left != nullptr && brotherNode->left->color == RED) {
+					if (brotherNode->left != nullptr && brotherNode->left->color == _red) {
 						if (_isOnLeft(brotherNode)) {
 							brotherNode->left->color = brotherNode->color;
 							brotherNode->color = parent->color;
@@ -304,7 +304,7 @@ private:
 
 		/* True when del and temp nodes are both black */
 
-		bool del_temp_black = ((tempNode == nullptr || temp->color == _black) && delNode->color == _black);
+		bool del_temp_black = ((tempNode == nullptr || tempNode->color == _black) && delNode->color == _black);
 		Node *parent = delNode->parent;
 
 		if (tempNode == nullptr){
@@ -488,14 +488,14 @@ public:
 
 	map & operator = (const map & src){
 		clear();
-		insert(x.begin(), x.end());
+		insert(src.begin(), src.end());
 		return (*this);
 	}
 
 	~map(){
 		clear();
-		_node_alloc.deallocate(_beginNode);
-		_node_alloc.deallocate(_endNode);
+		_node_alloc.deallocate(_beginNode, 1);
+		_node_alloc.deallocate(_endNode, 1);
 	}
 
 	void clear(){
@@ -525,7 +525,7 @@ public:
 
 	reverse_iterator rbegin() {
 		Node *node;
-		if (size == 0)
+		if (_size == 0)
 			node = _beginNode;
 		else
 			node = _endNode->parent;
@@ -535,7 +535,7 @@ public:
 
 	const_reverse_iterator rbegin() const {
 		Node *node;
-		if (size == 0)
+		if (_size == 0)
 			node = _beginNode;
 		else
 			node = _endNode->parent;
@@ -547,15 +547,12 @@ public:
 	const_iterator end() const{ return const_iterator(_endNode);}
 
 	reverse_iterator rend(){ return reverse_iterator(_beginNode);}
-	const_reverse_iterator rend() {return const_reverse_iterator(_beginNode);}
+	const_reverse_iterator rend() const {return const_reverse_iterator(_beginNode);}
 
 	bool empty() const{ return (_size == 0);}
 	size_type size() const { return (_size);}
 	size_type max_size() const { return std::numeric_limits<size_type>::max() / sizeof(_root);}
 
-	mapped_type & operator [] (const key_type & k){
-		return ((this->insert(std::make_pair(k,mapped_type())).first).second);
-	}
 
 	iterator find(const key_type & k){
 		iterator it = begin();
@@ -586,7 +583,6 @@ public:
 	}
 
 
-
 	std::pair<iterator, bool> insert(const value_type & val){
 		if (_size != 0){
 			if (_beginNode->parent != nullptr)
@@ -599,7 +595,11 @@ public:
 		Node *min = _getMin(_root);
 		_linkLeft(min, _beginNode);
 		_linkRight(max, _endNode);
-		return (std::make_pair(find(val.first)),isInserted);
+		return (std::make_pair(find(val.first),isInserted));
+	}
+
+	mapped_type & operator [] (const key_type & k){
+		return (this->insert(std::make_pair(k,mapped_type())).first->second);
 	}
 
 	iterator insert (iterator position, const value_type & val){
@@ -620,7 +620,7 @@ public:
 		erase(position->first);
 	}
 	size_type erase(const key_type & k){
-		if (size != 0){
+		if (_size != 0){
 			if (_beginNode->parent){
 				_beginNode->parent->left = nullptr;
 			}
@@ -638,7 +638,7 @@ public:
 	void erase(iterator first, iterator last){
 		while(first != last){
 			erase(first);
-			++first;
+			first++;
 		}
 	}
 
@@ -661,8 +661,59 @@ public:
 	}
 	key_compare key_comp() const{return _compare;}
 
-	value_compare value_comp() const{}
+	value_compare value_comp() const{ return value_compare(_compare);}
 
+	/*1 2 3 4 4 4 5 5 5 5 5 6 7
+	При поиске upper_bound для значения 5 это будет итератор (указатель, если концепция итератора для вас нова) на значение 6 - первое большее значение.
+
+	Соответственно, lower_bound будет указывать на первое не меньшее значение - на первое 5.*/
+	iterator lower_bound(const key_type & k){
+		iterator it = begin();
+		iterator ite = end();
+		for (; it != ite; ++it){
+			if (!_compare(it->first, k))
+				break;
+		}
+		return (it);
+	}
+	const_iterator lower_bound(const key_type & k) const{
+		const_iterator it = begin();
+		const_iterator ite = end();
+		for (; it != ite; ++it){
+			if (!_compare(it->first, k))
+				break;
+		}
+		return (it);
+	}
+
+	iterator upper_bound(const key_type & k){
+		iterator it = begin();
+		iterator ite = end();
+
+		for (; it != ite; ++it){
+			if (_compare(it->first, k))
+				break;
+		}
+		return (it);
+	}
+
+	const_iterator upper_bound(const key_type & k)const{
+		const_iterator it = begin();
+		const_iterator ite = end();
+
+		for (; it != ite; ++it){
+			if (_compare(it->first, k))
+				break;
+		}
+		return (it);
+	}
+
+	std::pair<const_iterator, const_iterator> equal_range(const key_type & k) const{
+		return std::make_pair(lower_bound(k), upper_bound(k));
+	}
+	std::pair<iterator,iterator> equal_range (const key_type& k){
+		return std::make_pair(lower_bound(k), upper_bound(k));
+	}
 
 
 
@@ -671,7 +722,7 @@ public:
 	private:
 			Node * _it;
 	public:
-			explicit iterator(Node * node = nullptr) : _it(it) {};
+			explicit iterator(Node * node = nullptr) : _it(node) {};
 			~iterator(){};
 			iterator(const iterator &it){
 				*this = it;
@@ -683,7 +734,15 @@ public:
 			}
 
 			iterator operator ++(){
-				_it = _nextNode(_it);
+				if (_it->right) {	_it = _getMin(_it->right);	return (*this);		}
+				else if (_it->parent && _it->parent->left == _it) {	_it = _it->parent;	return (*this);	}
+				else if (_it->parent->right == _it) {_it = _it->parent;}
+				Node *temp = _it;
+				while (temp->parent->right == temp) {
+					temp = temp->parent;
+					if (temp == nullptr) {	_it = _it->right; return (*this);}
+				}
+				_it = temp->parent;
 				return (*this);
 			}
 			iterator operator ++(int){
@@ -693,7 +752,14 @@ public:
 			}
 
 			iterator operator --(){
-				_it = _prevNode(_it);
+				if (_it->left) {_it = _getMax(_it->left);	return (*this);	}
+				else if (_it->parent && _it->parent->right == _it) {_it = _it->parent;	return (*this);	}
+				Node *temp = _it;
+				while (temp->parent->left == temp) {
+					temp = temp->parent;
+					if (temp == nullptr) {	_it = _it->left;	return (*this);	}
+				}
+				_it = _it->parent;
 				return (*this);
 			}
 
@@ -703,10 +769,10 @@ public:
 				return (oldValue);
 			}
 
-		bool operator == (const iterato &it) const { return _it == it._it;}
+		bool operator == (const iterator &it) const { return _it == it._it;}
 		bool operator == (const const_iterator &it) const { return _it == it._getNode();}
 
-		bool operator != (const iterato &it) const { return _it != it._it;}
+		bool operator != (const iterator &it) const { return _it != it._it;}
 		bool operator != (const const_iterator &it) const { return _it != it._getNode();}
 
 		value_type & operator *() const { return *(_it->content);}
@@ -719,7 +785,7 @@ public:
 	private:
 		Node * _it;
 	public:
-		explicit const_iterator(Node * node = nullptr) : _it(it) {};
+		explicit const_iterator(Node * node = nullptr) : _it(node) {};
 		~const_iterator(){};
 		const_iterator(const const_iterator &it){
 			*this = it;
@@ -740,8 +806,18 @@ public:
 		}
 
 		const_iterator operator ++(){
-			_it = _nextNode(_it);
-			return (*this);
+			if (_it->right) {
+				if (_it->right) {	_it = _getMin(_it->right);	return (*this);		}
+				else if (_it->parent && _it->parent->left == _it) {	_it = _it->parent;	return (*this);	}
+				else if (_it->parent->right == _it) {_it = _it->parent;}
+				Node *temp = _it;
+				while (temp->parent->right == temp) {
+					temp = temp->parent;
+					if (temp == nullptr) {	_it = _it->right; return (*this);}
+				}
+				_it = temp->parent;
+				return (*this);
+			}
 		}
 		const_iterator operator ++(int){
 			const_iterator oldValue(_it);
@@ -750,7 +826,14 @@ public:
 		}
 
 		const_iterator operator --(){
-			_it = _prevNode(_it);
+			if (_it->left) {_it = _getMax(_it->left);	return (*this);	}
+			else if (_it->parent && _it->parent->right == _it) {_it = _it->parent;	return (*this);	}
+			Node *temp = _it;
+			while (temp->parent->left == temp) {
+				temp = temp->parent;
+				if (temp == nullptr) {	_it = _it->left;	return (*this);	}
+			}
+			_it = _it->parent;
 			return (*this);
 		}
 
@@ -760,10 +843,10 @@ public:
 			return (oldValue);
 		}
 
-		bool operator == (const iterato &it) const { return _it == it._getNode();}
+		bool operator == (const iterator &it) const { return _it == it._getNode();}
 		bool operator == (const const_iterator &it) const { return _it == it._it;}
 
-		bool operator != (const iterato &it) const { return _it != it._getNode();}
+		bool operator != (const iterator &it) const { return _it != it._getNode();}
 		bool operator != (const const_iterator &it) const { return _it != it._it;}
 
 		const value_type & operator *() const { return *(_it->content);}
@@ -776,7 +859,7 @@ public:
 	private:
 		Node * _it;
 	public:
-		explicit reverse_iterator(Node * node = nullptr) : _it(it) {};
+		explicit reverse_iterator(Node * node = nullptr) : _it(node) {};
 		~reverse_iterator(){};
 		reverse_iterator(const reverse_iterator &it){
 			*this = it;
@@ -788,7 +871,14 @@ public:
 		}
 
 		reverse_iterator operator --(){
-			_it = _nextNode(_it);
+			if (_it->left) {_it = _getMax(_it->left);	return (*this);	}
+			else if (_it->parent && _it->parent->right == _it) {_it = _it->parent;	return (*this);	}
+			Node *temp = _it;
+			while (temp->parent->left == temp) {
+				temp = temp->parent;
+				if (temp == nullptr) {	_it = _it->left;	return (*this);	}
+			}
+			_it = _it->parent;
 			return (*this);
 		}
 		reverse_iterator operator --(int){
@@ -824,12 +914,12 @@ public:
 	private:
 		Node * _it;
 	public:
-		explicit const_reverse_iterator(Node * node = nullptr) : _it(it) {};
+		explicit const_reverse_iterator(Node * node = nullptr) : _it(node) {};
 		~const_reverse_iterator(){};
 		const_reverse_iterator(const const_reverse_iterator &it){
 			*this = it;
 		}
-		const_reverse_iterator(const revers_iterator &it){
+		const_reverse_iterator(const reverse_iterator &it){
 			*this = it;
 		}
 
@@ -877,11 +967,14 @@ public:
 
 	};
 
+};
 
-
-
-
-
+namespace ft{
+	template <class Key, class T, class Compare, class Alloc>
+	void swap (map<Key,T,Compare,Alloc>& x, map<Key,T,Compare,Alloc>& y)
+	{
+		x.swap(y);
+	}
 };
 
 #endif
