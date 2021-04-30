@@ -213,7 +213,7 @@ private:
 				else{
 					if (_isOnLeft(node)){
 						/*for right left*/
-						_rotateRigth(parent);
+						_rotateRight(parent);
 						_colorSwap(node, grandParent);
 					}
 					else{
@@ -330,7 +330,7 @@ private:
 		}
 		if (delNode->left == NULL || delNode->right == NULL){
 			if (delNode == _root){
-				_alloc.destroy(delNode->content, 1);
+				_alloc.destroy(delNode->content);
 				_alloc.construct(delNode->content, *(tempNode->content));
 				delNode->left = nullptr;
 				delNode->right = nullptr;
@@ -564,8 +564,8 @@ public:
 	}
 
 	size_type count(const key_type& k) const{
-		iterator it = begin();
-		iterator ite = end();
+		const_iterator it = begin();
+		const_iterator ite = end();
 		for (;it != ite; ++it){
 			if (it->first == k)
 				return 1;
@@ -734,15 +734,7 @@ public:
 			}
 
 			iterator operator ++(){
-				if (_it->right) {	_it = _getMin(_it->right);	return (*this);		}
-				else if (_it->parent && _it->parent->left == _it) {	_it = _it->parent;	return (*this);	}
-				else if (_it->parent->right == _it) {_it = _it->parent;}
-				Node *temp = _it;
-				while (temp->parent->right == temp) {
-					temp = temp->parent;
-					if (temp == nullptr) {	_it = _it->right; return (*this);}
-				}
-				_it = temp->parent;
+				_it = _nextNode(_it);
 				return (*this);
 			}
 			iterator operator ++(int){
@@ -752,14 +744,7 @@ public:
 			}
 
 			iterator operator --(){
-				if (_it->left) {_it = _getMax(_it->left);	return (*this);	}
-				else if (_it->parent && _it->parent->right == _it) {_it = _it->parent;	return (*this);	}
-				Node *temp = _it;
-				while (temp->parent->left == temp) {
-					temp = temp->parent;
-					if (temp == nullptr) {	_it = _it->left;	return (*this);	}
-				}
-				_it = _it->parent;
+				_it = _prevNode(_it);
 				return (*this);
 			}
 
@@ -779,6 +764,48 @@ public:
 		value_type * operator ->() const { return (_it->content);}
 		Node * _getNode() const { return _it;}
 
+	private:
+		Node * _nextNode(Node * node){
+			if (node->right)
+				return (_getMin(node->right));
+			else if (node->parent && node->parent->left == node)
+				return (node->parent);
+			else if (node->parent->right == node)
+				node = node->parent;
+			Node * temp = node;
+			while (temp->parent->right == temp) {
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _prevNode(Node * node){
+			if (node->left)
+				return (_getMax(node->left));
+			else if (node->parent && node->parent->right == node)
+				return (node->parent);
+			Node * temp = node;
+			while (temp->parent->right == temp){
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _getMin(Node * node){
+			if (node && node->left)
+				return _getMin(node);
+			return (node);
+		}
+
+		Node * _getMax(Node * node){
+			if (node && node->right)
+				return _getMax(node);
+			return (node);
+		}
 	};
 
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
@@ -806,18 +833,8 @@ public:
 		}
 
 		const_iterator operator ++(){
-			if (_it->right) {
-				if (_it->right) {	_it = _getMin(_it->right);	return (*this);		}
-				else if (_it->parent && _it->parent->left == _it) {	_it = _it->parent;	return (*this);	}
-				else if (_it->parent->right == _it) {_it = _it->parent;}
-				Node *temp = _it;
-				while (temp->parent->right == temp) {
-					temp = temp->parent;
-					if (temp == nullptr) {	_it = _it->right; return (*this);}
-				}
-				_it = temp->parent;
-				return (*this);
-			}
+			_it = _nextNode(_it);
+			return (*this);
 		}
 		const_iterator operator ++(int){
 			const_iterator oldValue(_it);
@@ -826,14 +843,7 @@ public:
 		}
 
 		const_iterator operator --(){
-			if (_it->left) {_it = _getMax(_it->left);	return (*this);	}
-			else if (_it->parent && _it->parent->right == _it) {_it = _it->parent;	return (*this);	}
-			Node *temp = _it;
-			while (temp->parent->left == temp) {
-				temp = temp->parent;
-				if (temp == nullptr) {	_it = _it->left;	return (*this);	}
-			}
-			_it = _it->parent;
+			_it = _prevNode(_it);
 			return (*this);
 		}
 
@@ -853,6 +863,48 @@ public:
 		const value_type * operator ->() const { return (_it->content);}
 		Node * _getNode() const { return _it;}
 
+	private:
+		Node * _nextNode(Node * node){
+			if (node->right)
+				return (_getMin(node->right));
+			else if (node->parent && node->parent->left == node)
+				return (node->parent);
+			else if (node->parent->right == node)
+				node = node->parent;
+			Node * temp = node;
+			while (temp->parent->right == temp) {
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _prevNode(Node * node){
+			if (node->left)
+				return (_getMax(node->left));
+			else if (node->parent && node->parent->right == node)
+				return (node->parent);
+			Node * temp = node;
+			while (temp->parent->right == temp){
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _getMin(Node * node){
+			if (node && node->left)
+				return _getMin(node);
+			return (node);
+		}
+
+		Node * _getMax(Node * node){
+			if (node && node->right)
+				return _getMax(node);
+			return (node);
+		}
 	};
 
 	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
@@ -871,14 +923,7 @@ public:
 		}
 
 		reverse_iterator operator --(){
-			if (_it->left) {_it = _getMax(_it->left);	return (*this);	}
-			else if (_it->parent && _it->parent->right == _it) {_it = _it->parent;	return (*this);	}
-			Node *temp = _it;
-			while (temp->parent->left == temp) {
-				temp = temp->parent;
-				if (temp == nullptr) {	_it = _it->left;	return (*this);	}
-			}
-			_it = _it->parent;
+			_it = _nextNode(_it);
 			return (*this);
 		}
 		reverse_iterator operator --(int){
@@ -907,7 +952,48 @@ public:
 		value_type & operator *() const { return *(_it->content);}
 		value_type * operator ->() const { return (_it->content);}
 		Node * _getNode() const { return _it;}
+	private:
+		Node * _nextNode(Node * node){
+			if (node->right)
+				return (_getMin(node->right));
+			else if (node->parent && node->parent->left == node)
+				return (node->parent);
+			else if (!_isOnLeft())
+				node = node->parent;
+			Node * temp = node;
+			while (temp->parent->right == temp) {
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
 
+		Node * _prevNode(Node * node){
+			if (node->left)
+				return (_getMax(node->left));
+			else if (node->parent && node->parent->right == node)
+				return (node->parent);
+			Node * temp = node;
+			while (temp->parent->right == temp){
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _getMin(Node * node){
+			if (node && node->left)
+				return _getMin(node);
+			return (node);
+		}
+
+		Node * _getMax(Node * node){
+			if (node && node->right)
+				return _getMax(node);
+			return (node);
+		}
 	};
 
 	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type> {
@@ -965,6 +1051,48 @@ public:
 		const value_type * operator ->() const { return (_it->content);}
 		Node * _getNode() const { return _it;}
 
+	private:
+		Node * _nextNode(Node * node){
+			if (node->right)
+				return (_getMin(node->right));
+			else if (node->parent && node->parent->left == node)
+				return (node->parent);
+			else if (!_isOnLeft())
+				node = node->parent;
+			Node * temp = node;
+			while (temp->parent->right == temp) {
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _prevNode(Node * node){
+			if (node->left)
+				return (_getMax(node->left));
+			else if (node->parent && node->parent->right == node)
+				return (node->parent);
+			Node * temp = node;
+			while (temp->parent->right == temp){
+				temp = temp->parent;
+				if (temp == nullptr)
+					return (node->right);
+			}
+			return (temp->parent);
+		}
+
+		Node * _getMin(Node * node){
+			if (node && node->left)
+				return _getMin(node);
+			return (node);
+		}
+
+		Node * _getMax(Node * node){
+			if (node && node->right)
+				return _getMax(node);
+			return (node);
+		}
 	};
 
 };

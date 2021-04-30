@@ -28,7 +28,7 @@ public:
 	}
 
 	void push(const value_type & val){
-		this->c.push_back();
+		this->c.push_back(val);
 	}
 
 	size_type size() const{
@@ -42,35 +42,39 @@ public:
 	const value_type & top() const{
 		return (this->c.back());
 	}
+
+	container_type getC() const{
+		return c;
+	}
 };
 	template <class T, class Container>
 	bool ft::operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
-		return (lhs.c == rhs.c);
+		return (lhs.getC() == rhs.getC());
 	}
 
 	template <class T, class Container>
 	bool ft::operator!= (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
-		return (lhs.c != rhs.c);
+		return (lhs.getC() != rhs.getC());
 	}
 
 	template <class T, class Container>
 	bool ft::operator<  (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
-		return (lhs.c < rhs.c);
+		return (lhs.getC() < rhs.getC());
 	}
 
 	template <class T, class Container>
 	bool ft::operator<= (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
-		return (lhs.c <= rhs.c);
+		return (lhs.getC() <= rhs.getC());
 	}
 
 	template <class T, class Container>
 	bool ft::operator>  (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
-		return (lhs.c > rhs.c);
+		return (lhs.getC() > rhs.getC());
 	}
 
 	template <class T, class Container>
 	bool ft::operator>= (const stack<T,Container>& lhs, const stack<T,Container>& rhs){
-		return (lhs >= rhs);
+		return (lhs.getC() >= rhs.getC());
 	}
 
 

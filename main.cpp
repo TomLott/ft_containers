@@ -8406,7 +8406,7 @@ void testStack() {
 	greaterOrEqualTestStack(std, ft);
 	greaterOrEqualTestStackFloat(std, ft);
 	greaterOrEqualTestStackStr(std, ft);
-};*/
+};
 
 int main()
 {
