@@ -8,4 +8,4 @@ include_directories(.)
 add_executable(containers
       utils.hpp
         queue.hpp
-        main1.cpp stack.hpp map.hpp)
+        main.cpp stack.hpp map.hpp map.cpp map.h stack.cpp queue.cpp)

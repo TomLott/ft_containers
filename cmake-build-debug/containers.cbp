@@ -82,13 +82,22 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/itollett/containers/main1.cpp">
+		<Unit filename="/Users/itollett/containers/main.cpp">
+			<Option target="containers"/>
+		</Unit>
+		<Unit filename="/Users/itollett/containers/map.cpp">
+			<Option target="containers"/>
+		</Unit>
+		<Unit filename="/Users/itollett/containers/map.h">
 			<Option target="containers"/>
 		</Unit>
 		<Unit filename="/Users/itollett/containers/map.hpp">
 			<Option target="containers"/>
 		</Unit>
 		<Unit filename="/Users/itollett/containers/queue.hpp">
+			<Option target="containers"/>
+		</Unit>
+		<Unit filename="/Users/itollett/containers/stack.cpp">
 			<Option target="containers"/>
 		</Unit>
 		<Unit filename="/Users/itollett/containers/stack.hpp">

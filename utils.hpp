@@ -63,6 +63,22 @@ namespace ft
 		y = z;
 	}
 
+	template <class T, class Alloc>
+	bool operator== (const ft::list<T,Alloc>& lhs, const ft::list<T,Alloc>& rhs);
+	template <class T, class Alloc>
+	bool operator!= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
+	template <class T, class Alloc>
+	bool operator < (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
+	template <class T, class Alloc>
+	bool operator<= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
+	template <class T, class Alloc>
+	bool operator >  (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
+	template <class T, class Alloc>
+	bool operator>= (const list<T,Alloc>& lhs, const list<T,Alloc>& rhs);
+	template <class T, class Alloc>
+	void swap(ft::list<T,Alloc> & x, ft::list<T, Alloc> & y);
+
+
 	template <class T, class Container>
 	bool operator== (const stack<T,Container>& lhs, const stack<T,Container>& rhs);
 

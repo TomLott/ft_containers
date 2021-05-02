@@ -43,7 +43,7 @@ template<class T, class Alloc>
 
 		explicit vector(size_type n, const value_type &val = value_type(),
 						const allocator_type &alloc = allocator_type()) : _size(
-				n), _alloc(alloc), _cap(n) {
+				n), _cap(n), _alloc(alloc) {
 			if (n < 0)
 				throw std::length_error("vector");
 			_arr = createVector(val);
@@ -54,10 +54,11 @@ template<class T, class Alloc>
 		template<class InputIterator>
 		vector(InputIterator first, InputIterator last,
 			   const allocator_type &alloc = allocator_type(),
-			   typename ft::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0) : _alloc(alloc),
+			   typename ft::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0) :
 																 _size(0),
 																 _cap(0),
-																 _arr(nullptr)
+																 _arr(nullptr),
+																 _alloc(alloc)
 																 {
 			ptrdiff_t len = last.operator->() - first.operator->();
 			if (len < 0)
@@ -77,7 +78,7 @@ template<class T, class Alloc>
 				this->_size = x._size;
 				this->_alloc = x._alloc;
 				this->_arr = _alloc.allocate(_cap);
-				for (int i = 0; i < _size; ++i) {
+				for (size_t i = 0; i < _size; ++i) {
 					_alloc.construct((_arr + i), *(x._arr + i));
 				}
 			}
@@ -531,7 +532,7 @@ template<class T, class Alloc>
 				typename ft::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0){
 			clear();
 			ptrdiff_t  len = last.operator->() - first.operator->();
-			if (len > _cap)
+			if ((size_t)len > _cap)
 				reserve(len);
 			for (ptrdiff_t i = 0; i < len; i++){
 				_alloc.construct(_arr + i, *first);
@@ -723,7 +724,7 @@ template<class T, class Alloc>
 		}
 
 		template <class T, class Alloc>
-		bool operator<  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs){
+		bool operator <  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs){
 			if (lhs == rhs)
 				return (false);
 			return (compare_elements(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
