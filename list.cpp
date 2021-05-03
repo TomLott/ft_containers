@@ -2049,6 +2049,11 @@ void lessOrEqualTest(std::string &std, std::string &ft) {
 	ft.clear();
 }
 
+void haha(){
+	ft::list<int>::iterator it;
+	++it;
+}
+
 void lessOrEqualTestFloat(std::string &std, std::string &ft) {
 	std::cout << "Less or equal float test" << " ";
 	std::list<float> defFloat;

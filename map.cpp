@@ -3,6 +3,7 @@
 #include "utils.hpp"
 #include <vector>
 #include <list>
+#include <stack>
 
 bool singleDigit(const int& value) {
 	return (value < 10);
